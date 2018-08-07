@@ -1,7 +1,7 @@
 import React from 'react';
 import Song from './Song';
 
-const SingleAlbum = ({ currentSong, playSong, album })=> {
+const SingleAlbum = ({ isPaused, currentSong, controls, album })=> {
   return (
     <div className="container">
       <div id='single-album' className='column'>
@@ -31,8 +31,9 @@ const SingleAlbum = ({ currentSong, playSong, album })=> {
                 artistName={ album.artist.name }
                 genre={ song.genre }
                 currentSong={ currentSong }
-                url={song.audioUrl}
-                playSong={ playSong }
+                url={ song.audioUrl }
+                controls={ controls }
+                isPaused = { isPaused }
               /> 
             }) }
           </tbody>

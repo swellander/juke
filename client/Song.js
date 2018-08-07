@@ -1,11 +1,15 @@
 import React from 'react';
 
-const Song = ({ index, id, name, currentSong, artistName, albumName, genre, playSong, url }) => {
-  let isPlaying = id === currentSong;
+const Song = ({ isPaused, index, id, name, currentSong, artistName, albumName, genre, controls, url }) => {
+  let isCurrentSong = id === currentSong;
+  let handleClick;
+  if (isPaused) handleClick = controls.play;
+  else if (isCurrentSong) handleClick = controls.pause;
+  else handleClick = controls.play;
   return (
     
-    <tr className={isPlaying ? 'active' : ''}>
-      <td><i className={isPlaying ? 'fa fa-pause-circle' : 'fa fa-play-circle' } onClick={() => playSong(url, id)}/></td>
+    <tr className={isCurrentSong ? 'active' : ''}>
+      <td><i className={isCurrentSong && !isPaused ? 'fa fa-pause-circle' : 'fa fa-play-circle' } onClick={() => handleClick(url, id)}/></td>
       <td>{ index }</td>
       <td>{ name }</td>
       <td>{ artistName }</td>

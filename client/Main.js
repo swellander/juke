@@ -14,7 +14,8 @@ export default class Main extends React.Component {
       currentSong: null,
       currentAudio: {} 
     }
-    this.playSong = this.playSong.bind(this);
+    this.pause = this.pause.bind(this);
+    this.play= this.play.bind(this);
     this.backToAlbums = this.backToAlbums.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
   }
@@ -25,28 +26,35 @@ export default class Main extends React.Component {
         this.setState({ albums: response.data })
       });
   }
+  // Refactor playSong() into play() and pause
 
-  playSong(audioUrl, songId) {
+  pause() {
+    const { currentAudio } = this.state; 
+    //if there is a song currently playing, pause it 
+    if (currentAudio.pause) currentAudio.pause();
+    this.forceUpdate();
+  }
+
+  play(audioUrl, songId) {
     const { currentAudio, currentSong } = this.state;
+
     //if selected song is paused
     if (currentAudio.paused && songId === currentSong) {
       currentAudio.play(); 
+      this.forceUpdate();
       return;
     }    
-    //if selected song is playing (i.e. pause btn clicked) just pause song
-    if (songId === currentSong && currentAudio.paused === false) {
-      currentAudio.pause();
-      return;
-    }
 
+    //TODO: maybe refactor this into a simple else? Gotta think that through
     //if different song is playing, pause it and start the new one
-    if (songId !== currentSong && currentAudio.pause) currentAudio.pause();
+    if (songId !== currentSong && currentAudio.pause) {
+      this.pause(); 
+    }
 
     const audio = document.createElement('audio');
     audio.src = audioUrl; 
     audio.load();
     audio.play();
-    console.dir(audio);
     this.setState({
       currentSong: songId, 
       currentAudio: audio
@@ -65,7 +73,18 @@ export default class Main extends React.Component {
   }
 
   render () {
-    let currentView = this.state.selectedAlbum.id ? <SingleAlbum currentSong={this.state.currentSong} playSong={this.playSong} album={this.state.selectedAlbum}/> : <AlbumContainer selectAlbum={ this.selectAlbum } albums={ this.state.albums } />;
+    let currentView = this.state.selectedAlbum.id ? 
+      <SingleAlbum 
+        currentSong={ this.state.currentSong } 
+        controls={
+          { play: this.play, pause: this.pause }
+        }
+        isPaused={ this.state.currentAudio.paused }
+        album={ this.state.selectedAlbum }/> 
+      : <AlbumContainer 
+        selectAlbum={ this.selectAlbum } 
+        albums={ this.state.albums } />;
+
     return (
       <div id='main' className='row container'>
         <Sidebar backToAlbums={this.backToAlbums} />
